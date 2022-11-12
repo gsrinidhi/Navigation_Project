@@ -9,7 +9,6 @@ reg pclk;
 reg psels;
 reg penables;
 reg pwrites;
-reg reset;
 reg [31:0] paddrs;
 reg [31:0] pwdatas;
 wire [31:0] prdatas;
@@ -22,7 +21,7 @@ always @(posedge preadys) begin
     state <= 1;
 end
 
-sun test(pclk,psels,penables,pwrites,paddrs,pwdatas,prdatas,preadys,reset);
+sun test(pclk,psels,penables,pwrites,paddrs,pwdatas,prdatas,preadys);
 
 initial begin
 
@@ -33,14 +32,11 @@ initial begin
     psels = 1'b0;
     penables = 1'b0;
     pwrites = 1'b0;
-    reset = 1'b0;
     paddrs = 32'h00000000;
     pwdatas = 32'h00000000;
     state = 1'b0;
     
     #5;
-
-    reset = 1'b1;
 
     #10;
 
@@ -113,7 +109,7 @@ initial begin
     #40;
     //state = 1'b0;
     paddrs = 32'h00000004;
-    pwdatas = 8'h0A;
+    pwdatas = 8'h1B;
     pwrites = 1'b1;
     psels = 1'b1;
     #20;
