@@ -29,10 +29,14 @@ reg [7:0] access_state = 8'h01;
 reg [7:0] calc_state = 8'h00;
 reg [31:0] op_temp;
 
-reg[31:0] sum_accum;
+reg[31:0] sum_accum_x;
+reg[31:0] sum_accum_y;
 reg[31:0] I_Data;
 reg[31:0] I_Data_temp;
-
+reg[31:0] I_total;
+reg[31:0] ans;
+reg[31:0] h;
+reg[31:0] k;
 always @(posedge pclk) begin
     if(psels == 1'b1) begin
         if(penables == 1'b1) begin
@@ -58,6 +62,7 @@ always @(posedge pclk) begin
                     I_Data_temp <= pwdatas[7:0];
                     access_state <= 8'h61;
                     calc_state <= 8'h04;
+                    status <= 8'h03;
                 end 
                 else begin
                     access_state <= 8'h01;
@@ -68,7 +73,16 @@ always @(posedge pclk) begin
                     op_temp[7:0] <= status;
                 end
                 else if(paddrs[7:0] == 8'h06) begin
-                    op_temp <= sum_accum;
+                    op_temp <= sum_accum_x;
+                end
+                else if(paddrs[7:0] == 8'h07) begin
+                    op_temp <= sum_accum_y;
+                end
+                else if(paddrs[7:0] == 8'h08) begin
+                    op_temp <= h;
+                end
+                else if(paddrs[7:0] == 8'h09) begin
+                    op_temp <= k;
                 end
                 else if(paddrs[7:0] == 8'h01) begin
                     op_temp[7:0] <= threshold;
@@ -113,10 +127,12 @@ always @(posedge pclk) begin
         // end
         if(calc_state == 8'h01) begin
             if(control == 8'h01) begin
-                sum_accum <= 32'h00000000;
+                sum_accum_x <= 32'h00000000;
+                sum_accum_y <= 32'h00000000;
                 xcount <= 16'h0000;
                 ycount <= 16'h0000;
                 status <= 8'h01;
+                I_total <= 32'h00000000;
                 calc_state <= 8'h00;
             end
         end
@@ -125,7 +141,9 @@ always @(posedge pclk) begin
             calc_state <= 8'h05;
         end
         else if(calc_state == 8'h05) begin
-            sum_accum <= sum_accum + I_Data;
+            sum_accum_x <= sum_accum_x + I_Data * (xcount+1);
+            sum_accum_y <= sum_accum_y + I_Data * (ycount+1);
+            I_total <= I_total + I_Data;
             calc_state <= 8'h06;
         end
         else if(calc_state == 8'h06) begin
@@ -138,7 +156,28 @@ always @(posedge pclk) begin
             end
             else begin
                 status <= 8'h02;
+                calc_state <= 8'h00;
             end
+            
+        end
+        else if(calc_state == 8'h03) begin
+            ycount <= ycount + 1;
+            xcount <= 0;
+            calc_state <= 8'h09;
+        end
+        else if(calc_state == 8'h09) begin
+            if(ycount == ymax) begin
+                calc_state <= 8'h08;
+            end
+            else begin
+                status <= 8'h02;
+                calc_state <= 8'h00;
+            end
+        end
+        else if(calc_state == 8'h08) begin
+            h <= sum_accum_x / I_total;
+            k <= sum_accum_y / I_total;
+            status <= 8'h48;
             calc_state <= 8'h00;
         end
     

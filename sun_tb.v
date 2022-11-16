@@ -39,7 +39,7 @@ initial begin
     #5;
 
     #10;
-
+    //Setting control register
     pwdatas = 32'h00000001;
 
     #15;
@@ -52,11 +52,8 @@ initial begin
     #20;
     penables = 1'b0;
     psels = 1'b0;
-
-    // while(preadys == 1'b0) begin
-    //     pwdatas = 1'b0;
-    // end
     #100;
+    //Reading status register
     psels = 1'b1;
     paddrs = 32'h00000005;
     pwrites = 1'b0;
@@ -69,6 +66,7 @@ initial begin
     penables = 1'b0;
     psels = 1'b0;
     #40
+    //Setting threshold as 0x0f
     paddrs = 32'h00000001;
     pwdatas = 8'h0F;
     pwrites = 1'b1;
@@ -79,6 +77,7 @@ initial begin
     penables = 1'b0;
     psels = 1'b0;
     #40;
+    //Reading threshold register
     pwrites = 1'b0;
     psels = 1'b1;
     #20;
@@ -87,8 +86,9 @@ initial begin
     penables = 1'b0;
     psels = 1'b0;
     #40;
+    //Setting xmax
     paddrs = 32'h00000002;
-    pwdatas = 8'hFF;
+    pwdatas = 8'h02;
     pwrites = 1'b1;
     psels = 1'b1;
     #20;
@@ -97,8 +97,9 @@ initial begin
     penables = 1'b0;
     psels = 1'b0;
     #40;
+    //Setting ymax
     paddrs = 32'h00000003;
-    pwdatas = 8'hFF;
+    pwdatas = 8'h02;
     pwrites = 1'b1;
     psels = 1'b1;
     #20;
@@ -108,8 +109,9 @@ initial begin
     psels = 1'b0;
     #40;
     //state = 1'b0;
+    //Sending first data
     paddrs = 32'h00000004;
-    pwdatas = 8'h1B;
+    pwdatas = 8'h10;
     pwrites = 1'b1;
     psels = 1'b1;
     #20;
@@ -117,11 +119,70 @@ initial begin
     #20;
     penables = 1'b0;
     psels = 1'b0;
-    // while(state == 1'b0) begin
-    //     psels = 0;
-    // end
-    state = 1'b0;
-    pwdatas = 8'h88;
+    #200
+    //Sending second data
+    paddrs = 32'h00000004;
+    pwdatas = 8'h10;
+    pwrites = 1'b1;
+    psels = 1'b1;
+    #20;
+    penables = 1'b1;
+    #20;
+    penables = 1'b0;
+    psels = 1'b0;
+    #200
+    //Sending third data
+    paddrs = 32'h00000004;
+    pwdatas = 8'h10;
+    pwrites = 1'b1;
+    psels = 1'b1;
+    #20;
+    penables = 1'b1;
+    #20;
+    penables = 1'b0;
+    psels = 1'b0;
+    #200
+    //Sending fourth data
+    paddrs = 32'h00000004;
+    pwdatas = 8'h10;
+    pwrites = 1'b1;
+    psels = 1'b1;
+    #20;
+    penables = 1'b1;
+    #20;
+    penables = 1'b0;
+    psels = 1'b0;
+    #200;
+    //Reading status register
+    paddrs = 32'h00000005;
+    pwrites = 1'b0;
+    psels = 1'b1;
+    #20;
+    penables = 1'b1;
+    #20;
+    penables = 1'b0;
+    psels = 1'b0;
+    #40;
+    //Reading h register
+    paddrs = 32'h00000008;
+    pwrites = 1'b0;
+    psels = 1'b1;
+    #20;
+    penables = 1'b1;
+    #20;
+    penables = 1'b0;
+    psels = 1'b0;
+    #40;
+    //Reading k register
+    paddrs = 32'h00000009;
+    pwrites = 1'b0;
+    psels = 1'b1;
+    #20;
+    penables = 1'b1;
+    #20;
+    penables = 1'b0;
+    psels = 1'b0;
+    #40;
     #200;
 
     #10;
